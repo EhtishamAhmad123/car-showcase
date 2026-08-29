@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaSearch, FaChevronDown } from 'react-icons/fa';
 import axios from 'axios';
@@ -17,10 +17,12 @@ const Home = () => {
 
   const fetchCars = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/cars`);
-      setCars(response.data.data);
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://car-showcase.vercel.app';
+      const response = await axios.get(${apiUrl}/api/cars);
+      setCars(response.data.data || []);
     } catch (error) {
       console.error('Error fetching cars:', error);
+      // Fallback cars if API fails
       setCars([
         {
           _id: '1',
@@ -34,18 +36,45 @@ const Home = () => {
           transmission: 'Automatic',
           color: 'Grey',
           engineCapacity: '3.0L',
-          horsepower: 335,
-          topSpeed: '250 km/h',
-          acceleration: '5.2 sec',
-          description: 'The BMW 840i is a luxury grand tourer that combines elegant styling with impressive performance.',
-          features: ['Leather Seats', 'Navigation', 'Parking Sensors'],
-          mainImage: 'https://via.placeholder.com/600x400/0066cc/ffffff?text=BMW+840i',
-          images: ['https://via.placeholder.com/600x400/0066cc/ffffff?text=BMW+840i'],
+          horsepower: 333,
+          topSpeed: '155 mph',
+          acceleration: '5.4 sec',
+          description: 'The BMW 840i is a luxurious grand tourer that combines elegant styling with impressive performance.',
+          features: ['20" M Alloy Wheels', 'M Sport Exterior', 'Live Cockpit Professional', 'Harman Kardon Sound'],
+          mainImage: 'https://picsum.photos/600/400?random=1',
+          images: [],
           condition: 'Used',
           location: 'London, UK',
           ownerContact: {
             phone: '07898365106',
-            email: 'info@automotors.co.uk'
+            email: 'sales@aumotors.uk'
+          },
+          featured: true
+        },
+        {
+          _id: '2',
+          title: 'Mercedes C43 AMG',
+          make: 'Mercedes-Benz',
+          model: 'C43 AMG',
+          year: 2023,
+          price: 39800,
+          mileage: 18550,
+          fuelType: 'Petrol',
+          transmission: 'Automatic',
+          color: 'Grey',
+          engineCapacity: '2.0L',
+          horsepower: 416,
+          topSpeed: '155 mph',
+          acceleration: '4.6 sec',
+          description: 'The Mercedes-AMG C43 is a performance-focused luxury sedan that delivers exhilarating driving dynamics.',
+          features: ['AMG SPEEDSHIFT MCT 9G-Tronic', '4MATIC All-Wheel Drive', 'AMG Ride Control Suspension'],
+          mainImage: 'https://picsum.photos/600/400?random=2',
+          images: [],
+          condition: 'Used',
+          location: 'London, UK',
+          ownerContact: {
+            phone: '07898365106',
+            email: 'sales@aumotors.uk'
           },
           featured: true
         }
@@ -55,19 +84,20 @@ const Home = () => {
     }
   };
 
-  const filteredCars = cars.filter(car => {
-    const matchesSearch = `${car.make} ${car.model} ${car.year}`
+  // Safe filtering - check if cars exists and is an array
+  const filteredCars = Array.isArray(cars) ? cars.filter(car => {
+    const matchesSearch = ${car.make || ''}  
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilter = filter === 'all' || car.fuelType === filter;
     return matchesSearch && matchesFilter;
-  });
+  }) : [];
 
   return (
     <>
       <Helmet>
         <title>AU MOTORS LTD - Premium Used Cars in London</title>
-        <meta name="description" content="Quality used cars in London. BMW, Mercedes, Audi, Nissan and more. Competitive prices and excellent service." />
+        <meta name="description" content="Quality used cars in London. BMW, Mercedes, Audi, Nissan and more." />
       </Helmet>
 
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -104,7 +134,6 @@ const Home = () => {
           
           <p className="text-xl text-gray-300 font-rajdhani max-w-2xl mx-auto mb-8">
             Discover quality used cars in London. Premium vehicles at competitive prices.
-            BMW, Mercedes, Audi, Nissan and more.
           </p>
 
           <motion.div
