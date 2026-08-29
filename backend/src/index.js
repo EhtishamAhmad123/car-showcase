@@ -16,15 +16,25 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Routes
-app.use('/api', carRoutes);
-
+// Health check — does not require MongoDB
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     message: 'Server is running'
   });
 });
+
+// Connect to database before API routes
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.use('/api', carRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
@@ -37,18 +47,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Connect to MongoDB
-connectDB();
-
 // Start server locally only
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 5001;
 
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📍 http://localhost:${PORT}`);
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📍 http://localhost:${PORT}`);
+    });
   });
 }
 
-// Export Express app for Vercel
 module.exports = app;
