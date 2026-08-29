@@ -8,12 +8,6 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Only connect to MongoDB if not in Vercel (or use MongoDB Atlas)
-if (process.env.NODE_ENV !== 'production') {
-  connectDB();
-}
 
 app.use(cors());
 app.use(express.json());
@@ -22,12 +16,14 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Routes
 app.use('/api', carRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
 
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -39,6 +35,8 @@ app.use((err, req, res, next) => {
 
 // For local development
 if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5001;
+  connectDB();
   app.listen(PORT, () => {
     console.log(🚀 Server running on port );
     console.log(📍 http://localhost:);

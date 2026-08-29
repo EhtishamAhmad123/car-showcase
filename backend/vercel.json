@@ -12,6 +12,10 @@
       "dest": "src/index.js"
     },
     {
+      "src": "/health",
+      "dest": "src/index.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "src/index.js"
     }
