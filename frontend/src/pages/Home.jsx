@@ -22,7 +22,6 @@ const Home = () => {
       setCars(response.data.data || []);
     } catch (error) {
       console.error('Error fetching cars:', error);
-      // Fallback cars if API fails
       setCars([
         {
           _id: '1',
@@ -39,36 +38,9 @@ const Home = () => {
           horsepower: 333,
           topSpeed: '155 mph',
           acceleration: '5.4 sec',
-          description: 'The BMW 840i is a luxurious grand tourer that combines elegant styling with impressive performance.',
-          features: ['20" M Alloy Wheels', 'M Sport Exterior', 'Live Cockpit Professional', 'Harman Kardon Sound'],
+          description: 'The BMW 840i is a luxurious grand tourer.',
+          features: ['20" M Alloy Wheels', 'M Sport Exterior'],
           mainImage: 'https://picsum.photos/600/400?random=1',
-          images: [],
-          condition: 'Used',
-          location: 'London, UK',
-          ownerContact: {
-            phone: '07898365106',
-            email: 'sales@aumotors.uk'
-          },
-          featured: true
-        },
-        {
-          _id: '2',
-          title: 'Mercedes C43 AMG',
-          make: 'Mercedes-Benz',
-          model: 'C43 AMG',
-          year: 2023,
-          price: 39800,
-          mileage: 18550,
-          fuelType: 'Petrol',
-          transmission: 'Automatic',
-          color: 'Grey',
-          engineCapacity: '2.0L',
-          horsepower: 416,
-          topSpeed: '155 mph',
-          acceleration: '4.6 sec',
-          description: 'The Mercedes-AMG C43 is a performance-focused luxury sedan that delivers exhilarating driving dynamics.',
-          features: ['AMG SPEEDSHIFT MCT 9G-Tronic', '4MATIC All-Wheel Drive', 'AMG Ride Control Suspension'],
-          mainImage: 'https://picsum.photos/600/400?random=2',
           images: [],
           condition: 'Used',
           location: 'London, UK',
@@ -84,7 +56,6 @@ const Home = () => {
     }
   };
 
-  // Safe filtering - check if cars exists and is an array
   const filteredCars = Array.isArray(cars) ? cars.filter(car => {
     const matchesSearch = ${car.make || ''}  
       .toLowerCase()
@@ -97,7 +68,7 @@ const Home = () => {
     <>
       <Helmet>
         <title>AU MOTORS LTD - Premium Used Cars in London</title>
-        <meta name="description" content="Quality used cars in London. BMW, Mercedes, Audi, Nissan and more." />
+        <meta name="description" content="Quality used cars in London." />
       </Helmet>
 
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -135,14 +106,6 @@ const Home = () => {
           <p className="text-xl text-gray-300 font-rajdhani max-w-2xl mx-auto mb-8">
             Discover quality used cars in London. Premium vehicles at competitive prices.
           </p>
-
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
-          >
-            <FaChevronDown className="text-3xl text-red-500" />
-          </motion.div>
         </motion.div>
       </section>
 
@@ -161,9 +124,6 @@ const Home = () => {
               Featured <span className="text-red-500">Cars</span>
             </h2>
             <div className="racing-stripe h-1 w-24 mx-auto mt-4"></div>
-            <p className="text-gray-400 font-rajdhani mt-4">
-              Browse our selection of quality used cars in London
-            </p>
           </motion.div>
 
           <div className="flex flex-col md:flex-row gap-4 mb-12">
@@ -197,7 +157,6 @@ const Home = () => {
           ) : filteredCars.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-400 font-rajdhani text-xl">No cars found matching your criteria</p>
-              <p className="text-gray-500 font-rajdhani text-sm mt-2">Check back soon for new arrivals!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
