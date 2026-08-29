@@ -1,19 +1,27 @@
-﻿{
-  "version": 2,
-  "builds": [
-    {
-      "src": "src/index.js",
-      "use": "@vercel/node"
+{
+  "services": {
+    "frontend": {
+      "root": "frontend",
+      "framework": "create-react-app"
+    },
+    "backend": {
+      "root": "backend"
     }
-  ],
-  "routes": [
+  },
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "src/index.js"
+      "source": "/api(/.*)?",
+      "destination": {
+        "type": "service",
+        "service": "backend"
+      }
     },
     {
-      "src": "/health",
-      "dest": "src/index.js"
+      "source": "/(.*)",
+      "destination": {
+        "type": "service",
+        "service": "frontend"
+      }
     }
   ]
 }
