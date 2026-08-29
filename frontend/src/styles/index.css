@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: #0a0a0a;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+.sports-bg {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  position: relative;
+}
+
+.sports-bg::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255, 0, 0, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(255, 0, 0, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.racing-stripe {
+  background: linear-gradient(90deg, #ff0000, #ff6b6b, #ff0000);
+  background-size: 200% 100%;
+  animation: stripeMove 3s linear infinite;
+}
+
+@keyframes stripeMove {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.glowing-text {
+  text-shadow: 
+    0 0 10px rgba(255, 0, 0, 0.5),
+    0 0 20px rgba(255, 0, 0, 0.3),
+    0 0 40px rgba(255, 0, 0, 0.1);
+}
+
+.car-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  border: 1px solid rgba(255, 0, 0, 0.1);
+}
+
+.car-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 0, 0, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.car-card:hover::before {
+  opacity: 1;
+}
+
+.car-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: rgba(255, 0, 0, 0.3);
+  box-shadow: 
+    0 20px 60px rgba(255, 0, 0, 0.2),
+    0 0 40px rgba(255, 0, 0, 0.1);
+}
+
+.speed-lines {
+  position: relative;
+  overflow: hidden;
+}
+
+.speed-lines::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 300%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 10px,
+    rgba(255, 255, 255, 0.02) 10px,
+    rgba(255, 255, 255, 0.02) 12px
+  );
+  animation: speedLines 8s linear infinite;
+}
+
+@keyframes speedLines {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(33.33%); }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff0000, #ff6b6b);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff6b6b, #ff0000);
+}
+
+.price-glow {
+  animation: priceGlow 2s ease-in-out infinite;
+}
+
+@keyframes priceGlow {
+  0%, 100% { 
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); 
+  }
+  50% { 
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.3); 
+  }
+}
+
+.sports-btn {
+  background: linear-gradient(135deg, #ff0000, #cc0000);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.sports-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+}
+
+.sports-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(45deg);
+  animation: btnShine 3s infinite;
+}
+
+@keyframes btnShine {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.gallery-thumb {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.gallery-thumb:hover {
+  border-color: #ff0000;
+  transform: scale(1.05);
+}
+
+.gallery-thumb.active {
+  border-color: #ff0000;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+}
+
+.loading-spinner {
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #ff0000;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .car-card:hover {
+    transform: translateY(-5px) scale(1.01);
+  }
+  
+  .glowing-text {
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  }
+}
