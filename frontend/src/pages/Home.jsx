@@ -18,7 +18,7 @@ const Home = () => {
   const fetchCars = async () => {
     try {
       const apiUrl = process.env.REACT_APP_API_URL || 'https://car-showcase.vercel.app';
-      const response = await axios.get(${apiUrl}/api/cars);
+      const response = await axios.get(apiUrl + '/api/cars');
       setCars(response.data.data || []);
     } catch (error) {
       console.error('Error fetching cars:', error);
@@ -56,13 +56,14 @@ const Home = () => {
     }
   };
 
-  const filteredCars = Array.isArray(cars) ? cars.filter(car => {
-    const matchesSearch = ${car.make || ''}  
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+  const safeCars = Array.isArray(cars) ? cars : [];
+
+  const filteredCars = safeCars.filter(function(car) {
+    const searchText = (car.make || '') + ' ' + (car.model || '') + ' ' + (car.year || '');
+    const matchesSearch = searchText.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filter === 'all' || car.fuelType === filter;
     return matchesSearch && matchesFilter;
-  }) : [];
+  });
 
   return (
     <>
@@ -78,7 +79,7 @@ const Home = () => {
           <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black"></div>
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
@@ -94,7 +95,7 @@ const Home = () => {
               <p className="font-orbitron text-sm text-white">🏁 QUALITY USED CARS</p>
             </div>
           </motion.div>
-          
+
           <h1 className="font-orbitron text-5xl md:text-7xl font-bold text-white mb-6">
             <span className="glowing-text">Drive</span> Your
             <br />
@@ -102,7 +103,7 @@ const Home = () => {
               Dream Car
             </span>
           </h1>
-          
+
           <p className="text-xl text-gray-300 font-rajdhani max-w-2xl mx-auto mb-8">
             Discover quality used cars in London. Premium vehicles at competitive prices.
           </p>
@@ -160,9 +161,9 @@ const Home = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredCars.map((car) => (
-                <CarCard key={car._id} car={car} />
-              ))}
+              {filteredCars.map(function(car) {
+                return <CarCard key={car._id} car={car} />;
+              })}
             </div>
           )}
         </div>
