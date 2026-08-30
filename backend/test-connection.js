@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
-const uri = 'mongodb+srv://ehtishamahmad950_db_user:mJuTesrq5CpxI5x9@cluster0.1mxdqtb.mongodb.net/carshowcase?retryWrites=true&w=majority&appName=Cluster0';
-
+const uri = mongoose.connect(process.env.MONGODB_URI)
 mongoose.connect(uri)
   .then(() => {
     console.log('✅ Connected to MongoDB successfully!');

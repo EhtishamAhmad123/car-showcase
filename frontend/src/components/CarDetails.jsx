@@ -11,13 +11,13 @@ const CarDetails = ({ car }) => {
   const [selectedImage, setSelectedImage] = useState(car.mainImage);
   const [isOpen, setIsOpen] = useState(false);
 
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return 'https://picsum.photos/600/400?random=1';
-    if (imagePath.startsWith('/uploads')) {
-      return 'http://localhost:5001' + imagePath;
-    }
-    return imagePath;
-  };
+const getImageUrl = (imagePath) => {
+  if (!imagePath) {
+    return 'https://picsum.photos/600/400?random=1';
+  }
+
+  return imagePath;
+};
 
   const allImages = [car.mainImage, ...car.images].filter(Boolean);
 
