@@ -1,4 +1,3 @@
-```javascript
 const Car = require('../models/Car');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
@@ -7,23 +6,14 @@ const cloudinary = require('../config/cloudinary');
 // ======================================================
 // MULTER CONFIGURATION
 // ======================================================
-//
-// Files are temporarily stored in memory and uploaded
-// directly to Cloudinary.
-//
-// This is suitable for Vercel/serverless environments
-// because we do NOT depend on permanent /uploads files.
-//
 
 const storage = multer.memoryStorage();
 
 const upload = multer({
-  storage: storage,
-
+  storage,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10 MB per image
+    fileSize: 10 * 1024 * 1024
   },
-
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
 
@@ -43,7 +33,6 @@ const upload = multer({
 
 exports.upload = upload;
 
-
 // ======================================================
 // CLOUDINARY UPLOAD HELPER
 // ======================================================
@@ -55,7 +44,7 @@ const uploadToCloudinary = (
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
-        folder: folder,
+        folder,
         resource_type: 'image'
       },
       (error, result) => {
@@ -71,16 +60,9 @@ const uploadToCloudinary = (
   });
 };
 
-
 // ======================================================
 // CLOUDINARY DELETE HELPER
 // ======================================================
-//
-// Deletes an image from Cloudinary using its publicId.
-//
-// Example:
-// publicId = "au-motors/cars/abc123"
-//
 
 const deleteFromCloudinary = async (publicId) => {
   if (!publicId) {
@@ -88,9 +70,7 @@ const deleteFromCloudinary = async (publicId) => {
   }
 
   try {
-    console.log(
-      `Deleting Cloudinary image: ${publicId}`
-    );
+    console.log('Deleting Cloudinary image:', publicId);
 
     const result = await cloudinary.uploader.destroy(
       publicId,
@@ -100,23 +80,20 @@ const deleteFromCloudinary = async (publicId) => {
     );
 
     console.log(
-      `Cloudinary delete result for ${publicId}:`,
+      'Cloudinary delete result:',
       result.result
     );
 
     return result;
   } catch (error) {
     console.error(
-      `Failed to delete Cloudinary image ${publicId}:`,
+      'Failed to delete Cloudinary image:',
       error.message
     );
 
-    // We don't throw here because a Cloudinary deletion
-    // failure should not prevent the MongoDB car deletion.
     return null;
   }
 };
-
 
 // ======================================================
 // GET ALL CARS
@@ -133,12 +110,8 @@ exports.getAllCars = async (req, res) => {
       count: cars.length,
       data: cars
     });
-
   } catch (error) {
-    console.error(
-      'Get all cars error:',
-      error
-    );
+    console.error('Get all cars error:', error);
 
     res.status(500).json({
       success: false,
@@ -147,16 +120,13 @@ exports.getAllCars = async (req, res) => {
   }
 };
 
-
 // ======================================================
 // GET CAR BY ID
 // ======================================================
 
 exports.getCarById = async (req, res) => {
   try {
-    const car = await Car.findById(
-      req.params.id
-    );
+    const car = await Car.findById(req.params.id);
 
     if (!car) {
       return res.status(404).json({
@@ -169,12 +139,8 @@ exports.getCarById = async (req, res) => {
       success: true,
       data: car
     });
-
   } catch (error) {
-    console.error(
-      'Get car by ID error:',
-      error
-    );
+    console.error('Get car by ID error:', error);
 
     res.status(500).json({
       success: false,
@@ -182,7 +148,6 @@ exports.getCarById = async (req, res) => {
     });
   }
 };
-
 
 // ======================================================
 // CREATE CAR
@@ -195,7 +160,6 @@ exports.createCar = async (req, res) => {
     };
 
     console.log('Creating car...');
-
 
     // ==================================================
     // UPLOAD MAIN IMAGE
@@ -228,7 +192,6 @@ exports.createCar = async (req, res) => {
       );
     }
 
-
     // ==================================================
     // UPLOAD ADDITIONAL IMAGES
     // ==================================================
@@ -239,7 +202,8 @@ exports.createCar = async (req, res) => {
       req.files.images.length > 0
     ) {
       console.log(
-        `Uploading ${req.files.images.length} additional images...`
+        'Uploading additional images:',
+        req.files.images.length
       );
 
       const uploadedImages = [];
@@ -263,19 +227,9 @@ exports.createCar = async (req, res) => {
       );
     }
 
-
     // ==================================================
     // FALLBACK IMAGE
     // ==================================================
-    //
-    // IMPORTANT:
-    // Because your schema requires mainImage to contain
-    // BOTH url and publicId, the fallback must also have
-    // this structure.
-    //
-    // We use null publicId because this image does not
-    // belong to your Cloudinary account.
-    //
 
     if (!carData.mainImage) {
       carData.mainImage = {
@@ -284,65 +238,49 @@ exports.createCar = async (req, res) => {
       };
     }
 
-
     // ==================================================
     // HANDLE FEATURES
     // ==================================================
 
-    if (
-      typeof carData.features === 'string'
-    ) {
+    if (typeof carData.features === 'string') {
       try {
-        const parsed = JSON.parse(
-          carData.features
-        );
+        const parsed = JSON.parse(carData.features);
 
         if (Array.isArray(parsed)) {
           carData.features = parsed;
         } else {
-          carData.features =
-            carData.features
-              .split(',')
-              .map(f => f.trim())
-              .filter(Boolean);
-        }
-
-      } catch {
-        carData.features =
-          carData.features
+          carData.features = carData.features
             .split(',')
             .map(f => f.trim())
             .filter(Boolean);
+        }
+      } catch {
+        carData.features = carData.features
+          .split(',')
+          .map(f => f.trim())
+          .filter(Boolean);
       }
     }
-
 
     // ==================================================
     // HANDLE OWNER CONTACT
     // ==================================================
 
-    if (
-      typeof carData.ownerContact === 'string'
-    ) {
+    if (typeof carData.ownerContact === 'string') {
       try {
-        carData.ownerContact =
-          JSON.parse(
-            carData.ownerContact
-          );
-
+        carData.ownerContact = JSON.parse(
+          carData.ownerContact
+        );
       } catch {
         // Leave unchanged
       }
     }
 
-
     // ==================================================
     // CREATE DATABASE RECORD
     // ==================================================
 
-    const car = await Car.create(
-      carData
-    );
+    const car = await Car.create(carData);
 
     console.log(
       'Car created successfully:',
@@ -353,12 +291,8 @@ exports.createCar = async (req, res) => {
       success: true,
       data: car
     });
-
   } catch (error) {
-    console.error(
-      'Create car error:',
-      error
-    );
+    console.error('Create car error:', error);
 
     res.status(400).json({
       success: false,
@@ -367,16 +301,13 @@ exports.createCar = async (req, res) => {
   }
 };
 
-
 // ======================================================
 // UPDATE CAR
 // ======================================================
 
 exports.updateCar = async (req, res) => {
   try {
-    const car = await Car.findById(
-      req.params.id
-    );
+    const car = await Car.findById(req.params.id);
 
     if (!car) {
       return res.status(404).json({
@@ -389,7 +320,6 @@ exports.updateCar = async (req, res) => {
       ...req.body
     };
 
-
     // ==================================================
     // NEW MAIN IMAGE
     // ==================================================
@@ -399,18 +329,16 @@ exports.updateCar = async (req, res) => {
       req.files.mainImage &&
       req.files.mainImage.length > 0
     ) {
-      const file =
-        req.files.mainImage[0];
+      const file = req.files.mainImage[0];
 
       console.log(
         'Uploading new main image to Cloudinary...'
       );
 
-      const result =
-        await uploadToCloudinary(
-          file.buffer,
-          'au-motors/cars'
-        );
+      const result = await uploadToCloudinary(
+        file.buffer,
+        'au-motors/cars'
+      );
 
       carData.mainImage = {
         url: result.secure_url,
@@ -422,15 +350,7 @@ exports.updateCar = async (req, res) => {
         result.secure_url
       );
 
-
-      // ------------------------------------------------
-      // DELETE OLD MAIN IMAGE
-      // ------------------------------------------------
-      //
-      // Only delete the old image if it has a
-      // Cloudinary publicId.
-      //
-
+      // Delete old main image
       if (
         car.mainImage &&
         car.mainImage.publicId
@@ -440,7 +360,6 @@ exports.updateCar = async (req, res) => {
         );
       }
     }
-
 
     // ==================================================
     // NEW ADDITIONAL IMAGES
@@ -452,17 +371,17 @@ exports.updateCar = async (req, res) => {
       req.files.images.length > 0
     ) {
       console.log(
-        `Uploading ${req.files.images.length} additional images...`
+        'Uploading new additional images:',
+        req.files.images.length
       );
 
       const uploadedImages = [];
 
       for (const file of req.files.images) {
-        const result =
-          await uploadToCloudinary(
-            file.buffer,
-            'au-motors/cars'
-          );
+        const result = await uploadToCloudinary(
+          file.buffer,
+          'au-motors/cars'
+        );
 
         uploadedImages.push({
           url: result.secure_url,
@@ -470,24 +389,20 @@ exports.updateCar = async (req, res) => {
         });
       }
 
-      carData.images =
-        uploadedImages;
+      carData.images = uploadedImages;
 
       console.log(
         'New additional images uploaded.'
       );
 
-
-      // ------------------------------------------------
-      // DELETE OLD ADDITIONAL IMAGES
-      // ------------------------------------------------
-
+      // Delete old additional images
       if (
         car.images &&
         car.images.length > 0
       ) {
         console.log(
-          `Deleting ${car.images.length} old additional images...`
+          'Deleting old additional images:',
+          car.images.length
         );
 
         for (const image of car.images) {
@@ -500,57 +415,43 @@ exports.updateCar = async (req, res) => {
       }
     }
 
-
     // ==================================================
     // HANDLE FEATURES
     // ==================================================
 
-    if (
-      typeof carData.features === 'string'
-    ) {
+    if (typeof carData.features === 'string') {
       try {
-        const parsed = JSON.parse(
-          carData.features
-        );
+        const parsed = JSON.parse(carData.features);
 
         if (Array.isArray(parsed)) {
           carData.features = parsed;
         } else {
-          carData.features =
-            carData.features
-              .split(',')
-              .map(f => f.trim())
-              .filter(Boolean);
-        }
-
-      } catch {
-        carData.features =
-          carData.features
+          carData.features = carData.features
             .split(',')
             .map(f => f.trim())
             .filter(Boolean);
+        }
+      } catch {
+        carData.features = carData.features
+          .split(',')
+          .map(f => f.trim())
+          .filter(Boolean);
       }
     }
-
 
     // ==================================================
     // HANDLE OWNER CONTACT
     // ==================================================
 
-    if (
-      typeof carData.ownerContact === 'string'
-    ) {
+    if (typeof carData.ownerContact === 'string') {
       try {
-        carData.ownerContact =
-          JSON.parse(
-            carData.ownerContact
-          );
-
+        carData.ownerContact = JSON.parse(
+          carData.ownerContact
+        );
       } catch {
         // Leave unchanged
       }
     }
-
 
     // ==================================================
     // UPDATE DATABASE
@@ -572,12 +473,8 @@ exports.updateCar = async (req, res) => {
       success: true,
       data: updatedCar
     });
-
   } catch (error) {
-    console.error(
-      'Update car error:',
-      error
-    );
+    console.error('Update car error:', error);
 
     res.status(400).json({
       success: false,
@@ -586,16 +483,13 @@ exports.updateCar = async (req, res) => {
   }
 };
 
-
 // ======================================================
 // DELETE CAR
 // ======================================================
 
 exports.deleteCar = async (req, res) => {
   try {
-    const car = await Car.findById(
-      req.params.id
-    );
+    const car = await Car.findById(req.params.id);
 
     if (!car) {
       return res.status(404).json({
@@ -604,9 +498,8 @@ exports.deleteCar = async (req, res) => {
       });
     }
 
-
     // ==================================================
-    // DELETE MAIN IMAGE FROM CLOUDINARY
+    // DELETE MAIN IMAGE
     // ==================================================
 
     if (
@@ -622,9 +515,8 @@ exports.deleteCar = async (req, res) => {
       );
     }
 
-
     // ==================================================
-    // DELETE ADDITIONAL IMAGES FROM CLOUDINARY
+    // DELETE ADDITIONAL IMAGES
     // ==================================================
 
     if (
@@ -632,7 +524,8 @@ exports.deleteCar = async (req, res) => {
       car.images.length > 0
     ) {
       console.log(
-        `Deleting ${car.images.length} additional images from Cloudinary...`
+        'Deleting additional images:',
+        car.images.length
       );
 
       for (const image of car.images) {
@@ -644,7 +537,6 @@ exports.deleteCar = async (req, res) => {
       }
     }
 
-
     // ==================================================
     // DELETE CAR FROM MONGODB
     // ==================================================
@@ -652,7 +544,7 @@ exports.deleteCar = async (req, res) => {
     await car.deleteOne();
 
     console.log(
-      'Car and its Cloudinary images deleted successfully:',
+      'Car and Cloudinary images deleted successfully:',
       car._id
     );
 
@@ -661,12 +553,8 @@ exports.deleteCar = async (req, res) => {
       message:
         'Car and its images deleted successfully'
     });
-
   } catch (error) {
-    console.error(
-      'Delete car error:',
-      error
-    );
+    console.error('Delete car error:', error);
 
     res.status(500).json({
       success: false,
@@ -674,7 +562,6 @@ exports.deleteCar = async (req, res) => {
     });
   }
 };
-
 
 // ======================================================
 // ADMIN LOGIN
@@ -713,4 +600,3 @@ exports.adminLogin = (req, res) => {
     message: 'Invalid credentials'
   });
 };
-```
