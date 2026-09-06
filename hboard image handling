@@ -1,0 +1,218 @@
+warning: in the working copy of 'frontend/src/components/AdminDashboard.jsx', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/frontend/src/components/AdminDashboard.jsx b/frontend/src/components/AdminDashboard.jsx[m
+[1mindex f28b4c65..240ab0d7 100644[m
+[1m--- a/frontend/src/components/AdminDashboard.jsx[m
+[1m+++ b/frontend/src/components/AdminDashboard.jsx[m
+[36m@@ -1,183 +1,335 @@[m
+ import React, { useState, useEffect } from 'react';[m
+ import { useNavigate } from 'react-router-dom';[m
+ import { motion } from 'framer-motion';[m
+[31m-import { [m
+[31m-  FaPlus, FaEdit, FaTrash, FaCar, [m
+[31m-  FaSignOutAlt, FaTimes, FaUpload, FaImage[m
+[32m+[m[32mimport {[m
+[32m+[m[32m  FaPlus,[m
+[32m+[m[32m  FaEdit,[m
+[32m+[m[32m  FaTrash,[m
+[32m+[m[32m  FaCar,[m
+[32m+[m[32m  FaSignOutAlt,[m
+[32m+[m[32m  FaTimes,[m
+[32m+[m[32m  FaUpload,[m
+[32m+[m[32m  FaImage[m
+ } from 'react-icons/fa';[m
+ import toast from 'react-hot-toast';[m
+ import axios from 'axios';[m
+ [m
+[32m+[m[32mconst API_URL = process.env.REACT_APP_API_URL;[m
+[32m+[m
+[32m+[m[32mconst getImageUrl = (image) => {[m
+[32m+[m[32m  if (!image) return '';[m
+[32m+[m
+[32m+[m[32m  // Cloudinary object: { url, publicId }[m
+[32m+[m[32m  if (typeof image === 'object') {[m
+[32m+[m[32m    return image.url || '';[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  // Backward compatibility if database contains a string[m
+[32m+[m[32m  if (typeof image === 'string') {[m
+[32m+[m[32m    return image;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  return '';[m
+[32m+[m[32m};[m
+[32m+[m
+ const AdminDashboard = () => {[m
+   const [cars, setCars] = useState([]);[m
+   const [loading, setLoading] = useState(true);[m
+   const [showModal, setShowModal] = useState(false);[m
+   const [editingCar, setEditingCar] = useState(null);[m
+   const [uploading, setUploading] = useState(false);[m
+[32m+[m
+   const navigate = useNavigate();[m
+ [m
+[31m-  const [formData, setFormData] = useState({[m
+[31m-    title: '', make: '', model: '', year: '', price: '',[m
+[31m-    mileage: '', fuelType: 'Petrol', transmission: 'Manual',[m
+[31m-    color: '', engineCapacity: '', horsepower: '', topSpeed: '',[m
+[31m-    acceleration: '', description: '', features: [],[m
+[31m-    location: '', ownerContact: { phone: '', email: '', whatsapp: '' },[m
+[31m-    condition: 'Used', featured: false[m
+[31m-  });[m
+[32m+[m[32m  // =====================================================[m
+[32m+[m[32m  // FORM DATA[m
+[32m+[m[32m  // =====================================================[m
+[32m+[m
+[32m+[m[32m  const initialFormData = {[m
+[32m+[m[32m    title: '',[m
+[32m+[m[32m    make: '',[m
+[32m+[m[32m    model: '',[m
+[32m+[m[32m    year: '',[m
+[32m+[m[32m    price: '',[m
+[32m+[m[32m    mileage: '',[m
+[32m+[m[32m    fuelType: 'Petrol',[m
+[32m+[m[32m    transmission: 'Manual',[m
+[32m+[m[32m    color: '',[m
+[32m+[m[32m    engineCapacity: '',[m
+[32m+[m[32m    horsepower: '',[m
+[32m+[m[32m    topSpeed: '',[m
+[32m+[m[32m    acceleration: '',[m
+[32m+[m[32m    description: '',[m
+[32m+[m[32m    features: [],[m
+[32m+[m[32m    location: '',[m
+[32m+[m[32m    ownerContact: {[m
+[32m+[m[32m      phone: '',[m
+[32m+[m[32m      email: '',[m
+[32m+[m[32m      whatsapp: ''[m
+[32m+[m[32m    },[m
+[32m+[m[32m    condition: 'Used',[m
+[32m+[m[32m    featured: false[m
+[32m+[m[32m  };[m
+[32m+[m
+[32m+[m[32m  const [formData, setFormData] = useState(initialFormData);[m
+[32m+[m
+[32m+[m[32m  // =====================================================[m
+[32m+[m[32m  // IMAGE STATES[m
+[32m+[m[32m  // =====================================================[m
+ [m
+[31m-  // File upload states[m
+   const [mainImageFile, setMainImageFile] = useState(null);[m
+   const [mainImagePreview, setMainImagePreview] = useState(null);[m
+[32m+[m
+   const [galleryFiles, setGalleryFiles] = useState([]);[m
+   const [galleryPreviews, setGalleryPreviews] = useState([]);[m
+ [m
+[32m+[m[32m  // =====================================================[m
+[32m+[m[32m  // AUTH + FETCH[m
+[32m+[m[32m  // =====================================================[m
+[32m+[m
+   useEffect(() => {[m
+     const token = localStorage.getItem('adminToken');[m
+[32m+[m
+     if (!token) {[m
+       navigate('/admin/login');[m
+       return;[m
+     }[m
+[32m+[m
+     fetchCars();[m
+   }, [navigate]);[m
+ [m
+[32m+[m[32m  // =====================================================[m
+[32m+[m[32m  // FETCH ALL CARS[m
+[32m+[m[32m  // =====================================================[m
+[32m+[m
+   const fetchCars = async () => {[m
+     try {[m
+[31m-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/cars`);[m
+[31m-      setCars(response.data.data);[m
+[32m+[m[32m      setLoading(true);[m
+[32m+[m
+[32m+[m[32m      const response = await axios.get([m
+[32m+[m[32m        `${API_URL}/api/cars`[m
+[32m+[m[32m      );[m
+[32m+[m
+[32m+[m[32m      if (response.data.success) {[m
+[32m+[m[32m        setCars(response.data.data || []);[m
+[32m+[m[32m      } else {[m
+[32m+[m[32m        setCars([]);[m
+[32m+[m[32m      }[m
+     } catch (error) {[m
+[32m+[m[32m      console.error([m
+[32m+[m[32m        'Fetch cars error:',[m
+[32m+[m[32m        error.response?.data || error.message[m
+[32m+[m[32m      );[m
+[32m+[m
+       toast.error('Failed to fetch cars');[m
+     } finally {[m
+       setLoading(false);[m
+     }[m
+   };[m
+ [m
+[32m+[m[32m  // =====================================================[m
+[32m+[m[32m  // LOGOUT[m
+[32m+[m[32m  // =====================================================[m
+[32m+[m
+   const handleLogout = () => {[m
+     localStorage.removeItem('adminToken');[m
+[31m-    navigate('/');[m
+[32m+[m
+     toast.success('Logged out successfully');[m
+[32m+[m
+[32m+[m[32m    navigate('/');[m
+   };[m
+ [m
+[32m+[m[32m  // =====================================================[m
+[32m+[m[32m  // MAIN IMAGE CHANGE[m
+[32m+[m[32m  // =====================================================[m
+[32m+[m
+   const handleMainImageChange = (e) => {[m
+[31m-    const file = e.target.files[0];[m
+[32m+[m[32m    const file = e.target.files?.[0];[m
+[32m+[m
+     if (!file) return;[m
+[31m-    [m
+[32m+[m
+[32m+[m[32m    // Basic validation[m
+[32m+[m[32m    if (!file.type.startsWith('image/')) {[m
+[32m+[m[32m      toast.error('Please select a valid image file');[m
+[32m+[m[32m      return;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // 10 MB[m
+[32m+[m[32m    if (file.size > 10 * 1024 * 1024) {[m
+[32m+[m[32m      toast.error('Main image must be less than 10MB');[m
+[32m+[m[32m      return;[m
+[32m+[m[32m    }[m
+[32m+[m
+     setMainImageFile(file);[m
+[32m+[m
+     const reader = new FileReader();[m
+[31m-    reader.onload = (e) => {[m
+[31m-      setMainImagePreview(e.target.result);[m
+[32m+[m
+[32m+[m[32m    reader.onload = (event) => {[m
+[32m+[m[32m      setMainImagePreview(event.target.result);[m
+     };[m
+[32m+[m
+     reader.readAsDataURL(file);[m
+   };[m
+ [m
+[32m+[m[32m  // =====================================================[m
+[32m+[m[32m  // GALLERY IMAGE CHANGE[m
+[32m+[m[32m  // =====================================================[m
+[32m+[m
+   const handleGalleryImagesChange = (e) => {[m
+[31m-    const files = Array.from(e.target.files);[m
+[32m+[m[32m    const files = Array.from(e.target.files || []);[m
+[32m+[m
+     if (!files.length) return;[m
+[31m-    [m
+[31m-    setGalleryFiles(prev => [...prev, ...files]);[m
+[31m-    [m
+[31m-    files.forEach(file => {[m
+[32m+[m
+[32m+[m[32m    const validFiles = files.filter((file) => {[m
+[32m+[m[32m      if (!file.type.startsWith('image/')) {[m
+[32m+[m[32m        toast.error(`${file.name} is not an image`);[m
+[32m+[m[32m        return false;[m
+[32m+[m[32m      }[m
+[32m+

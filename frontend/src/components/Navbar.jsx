@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaCar, FaUser, FaSignOutAlt, FaTachometerAlt } from 'react-icons/fa';
 import { motion } from 'framer-motion';
@@ -27,6 +27,7 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative">
               <div className="absolute inset-0 bg-red-600 blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
@@ -40,12 +41,14 @@ const Navbar = () => {
             </div>
           </Link>
 
+          {/* Navigation Links - ADMIN button removed */}
           <div className="flex items-center gap-6">
             <Link to="/" className="text-gray-300 hover:text-red-500 transition-colors font-rajdhani font-semibold text-lg">
               HOME
             </Link>
             
-            {isAdmin ? (
+            {/* Admin panel - hidden for public, only visible when logged in */}
+            {isAdmin && (
               <>
                 <Link to="/admin/dashboard" className="flex items-center gap-2 text-gray-300 hover:text-red-500 transition-colors">
                   <FaTachometerAlt />
@@ -59,11 +62,6 @@ const Navbar = () => {
                   <span className="font-rajdhani font-semibold">LOGOUT</span>
                 </button>
               </>
-            ) : (
-              <Link to="/admin/login" className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-all hover:scale-105">
-                <FaUser />
-                <span className="font-rajdhani font-semibold">ADMIN</span>
-              </Link>
             )}
           </div>
         </div>

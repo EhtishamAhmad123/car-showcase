@@ -7,19 +7,32 @@ import {
 } from 'react-icons/fa';
 import { MdSpeed } from 'react-icons/md';
 
+const FALLBACK_IMAGE = '/cars/placeholder.jpg';
+
+const getImageUrl = (imagePath) => {
+  if (!imagePath) {
+    return FALLBACK_IMAGE;
+  }
+  
+  // If it's already a full URL (http/https)
+  if (typeof imagePath === 'string' && (imagePath.startsWith('http://') || imagePath.startsWith('https://'))) {
+    return imagePath;
+  }
+  
+  // Static image path from public folder (starts with /cars/)
+  if (typeof imagePath === 'string' && imagePath.startsWith('/cars/')) {
+    return imagePath;
+  }
+  
+  // Fallback
+  return FALLBACK_IMAGE;
+};
+
 const CarDetails = ({ car }) => {
   const [selectedImage, setSelectedImage] = useState(car.mainImage);
   const [isOpen, setIsOpen] = useState(false);
 
-const getImageUrl = (imagePath) => {
-  if (!imagePath) {
-    return 'https://picsum.photos/600/400?random=1';
-  }
-
-  return imagePath;
-};
-
-  const allImages = [car.mainImage, ...car.images].filter(Boolean);
+  const allImages = [car.mainImage, ...(car.images || [])].filter(Boolean);
 
   const specs = [
     { icon: <FaCalendar />, label: 'Year', value: car.year },
@@ -65,7 +78,7 @@ const getImageUrl = (imagePath) => {
                 alt={car.make + ' ' + car.model}
                 className="w-full h-[500px] object-contain transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {
-                  e.target.src = 'https://picsum.photos/600/400?random=1';
+                  e.target.src = FALLBACK_IMAGE;
                 }}
               />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -89,14 +102,14 @@ const getImageUrl = (imagePath) => {
                   className={'gallery-thumb w-28 h-28 object-cover rounded-lg cursor-pointer border-2 transition-all ' + (selectedImage === img ? 'border-red-500' : 'border-transparent')}
                   whileHover={{ scale: 1.05 }}
                   onError={(e) => {
-                    e.target.src = 'https://picsum.photos/100/100?random=1';
+                    e.target.src = FALLBACK_IMAGE;
                   }}
                 />
               ))}
             </div>
           </div>
 
-          {/* Details - Bigger Font */}
+          {/* Details */}
           <div className="space-y-6">
             <div>
               <motion.h1 
@@ -146,7 +159,7 @@ const getImageUrl = (imagePath) => {
             <div className="bg-white/5 p-4 rounded-xl border border-gray-800">
               <h3 className="font-rajdhani font-bold text-white text-lg md:text-xl mb-2">Key Features</h3>
               <div className="flex flex-wrap gap-2">
-                {car.features.map((feature, index) => (
+                {car.features && car.features.map((feature, index) => (
                   <span
                     key={index}
                     className="bg-red-600/20 text-red-400 px-3 py-1 rounded-full text-sm md:text-base font-rajdhani font-semibold border border-red-600/30"

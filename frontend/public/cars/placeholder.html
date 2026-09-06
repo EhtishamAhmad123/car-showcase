@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+<canvas id="c" width="200" height="200"></canvas>
+<script>
+const ctx = document.getElementById('c').getContext('2d');
+ctx.fillStyle = '#808080';
+ctx.fillRect(0, 0, 200, 200);
+ctx.fillStyle = 'white';
+ctx.font = '20px Arial';
+ctx.textAlign = 'center';
+ctx.fillText('No Image', 100, 100);
+const link = document.createElement('a');
+link.download = 'placeholder.jpg';
+link.href = document.getElementById('c').toDataURL('image/jpeg');
+link.click();
+</script>
+</body>
+</html>
