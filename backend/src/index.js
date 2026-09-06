@@ -23,7 +23,7 @@ app.get('/health', (req, res) => {
 });
 
 // Connect to database ONCE
-connectDB();
+connectDB().catch(err => console.error('DB connection failed:', err.message));
 
 // API Routes
 app.use('/api', carRoutes);
@@ -54,7 +54,7 @@ module.exports = app;
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 5001;
   app.listen(PORT, () => {
-    console.log(🚀 Server running on port );
-    console.log(📍 http://localhost:);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📍 http://localhost:${PORT}`);
   });
 }
