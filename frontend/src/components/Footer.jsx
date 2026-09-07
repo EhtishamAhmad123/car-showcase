@@ -26,7 +26,6 @@ const Footer = () => {
             <h3 className="font-rajdhani font-bold text-white text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li><a href="/" className="text-gray-400 hover:text-red-500 transition-colors font-rajdhani text-sm">Home</a></li>
-              <li><a href="/admin/login" className="text-gray-400 hover:text-red-500 transition-colors font-rajdhani text-sm">Admin Login</a></li>
             </ul>
           </div>
 
