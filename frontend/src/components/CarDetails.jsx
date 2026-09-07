@@ -36,7 +36,7 @@ const CarDetails = ({ car }) => {
 
   const specs = [
     { icon: <FaCalendar />, label: 'Year', value: car.year },
-    { icon: <FaTachometerAlt />, label: 'Mileage', value: car.mileage.toLocaleString() + ' km' },
+    { icon: <FaTachometerAlt />, label: 'Mileage', value: car.mileage.toLocaleString() + ' miles' },
     { icon: <FaGasPump />, label: 'Fuel Type', value: car.fuelType },
     { icon: <FaCog />, label: 'Transmission', value: car.transmission },
     { icon: <FaBolt />, label: 'Horsepower', value: car.horsepower + ' HP' },

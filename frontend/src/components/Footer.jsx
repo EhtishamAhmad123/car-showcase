@@ -1,5 +1,5 @@
-﻿import React from 'react';
-import { FaCar, FaPhone, FaEnvelope, FaMapMarkerAlt, FaBuilding } from 'react-icons/fa';
+import React from 'react';
+import { FaCar, FaPhone, FaEnvelope, FaMapMarkerAlt, FaBuilding, FaCompany } from 'react-icons/fa';
 
 const Footer = () => {
   return (
@@ -26,7 +26,7 @@ const Footer = () => {
             <h3 className="font-rajdhani font-bold text-white text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li><a href="/" className="text-gray-400 hover:text-red-500 transition-colors font-rajdhani text-sm">Home</a></li>
-              <li><a href="#cars" className="text-gray-400 hover:text-red-500 transition-colors font-rajdhani text-sm">View Cars</a></li>
+              <li><a href="/admin/login" className="text-gray-400 hover:text-red-500 transition-colors font-rajdhani text-sm">Admin Login</a></li>
             </ul>
           </div>
 
@@ -47,7 +47,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <FaEnvelope className="text-red-500" />
-                <span className="font-rajdhani text-sm">sales@aumotors.uk</span>
+                <span className="font-rajdhani text-sm">info@automotors.co.uk</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <FaBuilding className="text-red-500" />
@@ -69,3 +69,5 @@ const Footer = () => {
 };
 
 export default Footer;
+
+

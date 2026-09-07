@@ -91,7 +91,7 @@ const CarCard = ({ car }) => {
             </div>
             <div className="flex items-center gap-2 text-gray-400">
               <FaTachometerAlt className="text-red-500" />
-              <span className="font-rajdhani text-sm">{Number(car.mileage || 0).toLocaleString()} km</span>
+              <span className="font-rajdhani text-sm">{Number(car.mileage || 0).toLocaleString()} miles</span>
             </div>
             <div className="flex items-center gap-2 text-gray-400">
               <FaCalendar className="text-red-500" />
